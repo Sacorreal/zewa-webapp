@@ -1,9 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    serverActions: {
+      // Logo de hasta 5 MB (límite de zewa-api) más el overhead de multipart.
+      bodySizeLimit: "6mb",
+    },
+  },
   turbopack: {
     rules: {
       "*.css": {
