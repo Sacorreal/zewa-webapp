@@ -9,7 +9,7 @@ import { forwardedClientHeaders } from "@/lib/api/forwarded-headers.server";
 import { zewaApi } from "@/lib/api/zewa-api.server";
 import {
   ACCESS_TOKEN_COOKIE,
-  ADMIN_LOGIN_PATH,
+  APP_HOME_PATH,
   clearSessionCookies,
   type SessionTokens,
   writeSessionCookies,
@@ -48,7 +48,7 @@ export async function logout(): Promise<void> {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   if (accessToken) await revokeSession(accessToken);
   clearSessionCookies(cookieStore);
-  redirect(ADMIN_LOGIN_PATH);
+  redirect(APP_HOME_PATH);
 }
 
 /** Revoca la sesión en zewa-api; si ya expiró, no hay nada que revocar. */

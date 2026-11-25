@@ -9,6 +9,8 @@ export const REFRESH_TOKEN_COOKIE = "zewa_admin_rt";
 
 export const ADMIN_LOGIN_PATH = "/admin/login";
 export const ADMIN_HOME_PATH = "/admin/dashboard";
+/** Home público de la app (landing): destino tras cerrar sesión. */
+export const APP_HOME_PATH = "/";
 
 export interface SessionTokens {
   accessToken: string;
