@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 /**
  * Validación de NIT colombiano para la UI (DV módulo 11 DIAN). Refleja la
  * regla de zewa-api (`src/utils/nit.ts`), que es la autoritativa.
@@ -25,4 +27,16 @@ export function nitError(raw: string): string | null {
     return "El dígito de verificación del NIT no es válido.";
   }
   return null;
+}
+
+/** Campo zod de NIT con el mensaje de obligatoriedad propio de cada formulario. */
+export function nitField(requiredMessage: string) {
+  return z
+    .string()
+    .trim()
+    .min(1, requiredMessage)
+    .superRefine((value, context) => {
+      const error = nitError(value);
+      if (error) context.addIssue({ code: "custom", message: error });
+    });
 }

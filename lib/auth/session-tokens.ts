@@ -1,15 +1,49 @@
 /**
- * Contrato de la sesión del panel global: tokens emitidos por zewa-api que el
- * BFF guarda en cookies `httpOnly` (el navegador nunca los lee).
+ * Contrato de las sesiones del BFF: tokens emitidos por zewa-api que se
+ * guardan en cookies `httpOnly` (el navegador nunca los lee). Cada zona de la
+ * app tiene su propio perfil y sus propias cookies, así una sesión no abre la otra.
  * Compartido por `proxy.ts` y el código de servidor, por eso no usa `server-only`.
  */
 
-export const ACCESS_TOKEN_COOKIE = "zewa_admin_at";
-export const REFRESH_TOKEN_COOKIE = "zewa_admin_rt";
+export type SessionScope = "global" | "account" | "tenant";
 
-export const ADMIN_LOGIN_PATH = "/admin/login";
-export const ADMIN_HOME_PATH = "/admin/dashboard";
-/** Home público de la app (landing): destino tras cerrar sesión. */
+export interface SessionProfile {
+  /** Prefijo de las rutas protegidas por esta sesión. */
+  areaPath: string;
+  accessCookie: string;
+  refreshCookie: string;
+  loginPath: string;
+  homePath: string;
+  /** Alcances que la zona admite; cualquier otro se trata como sin sesión. */
+  acceptedScopes: readonly SessionScope[];
+}
+
+/** Panel global de ZEWA (SUPERADMIN). */
+export const ADMIN_SESSION: SessionProfile = {
+  areaPath: "/admin",
+  accessCookie: "zewa_admin_at",
+  refreshCookie: "zewa_admin_rt",
+  loginPath: "/admin/login",
+  homePath: "/admin/dashboard",
+  acceptedScopes: ["global"],
+};
+
+/** Zona del conjunto (administrador, residentes y propietarios). */
+export const TENANT_SESSION: SessionProfile = {
+  areaPath: "/conjunto",
+  accessCookie: "zewa_at",
+  refreshCookie: "zewa_rt",
+  loginPath: "/iniciar-sesion",
+  homePath: "/conjunto",
+  acceptedScopes: ["tenant", "account"],
+};
+
+/** Elección de conjunto para quien pertenece a varios (sesión de alcance `account`). */
+export const TENANT_SELECTION_PATH = "/conjunto/seleccionar";
+
+export const SESSION_PROFILES: readonly SessionProfile[] = [ADMIN_SESSION, TENANT_SESSION];
+
+/** Home público de la app (landing): destino tras cerrar la sesión global. */
 export const APP_HOME_PATH = "/";
 
 export interface SessionTokens {
@@ -17,7 +51,7 @@ export interface SessionTokens {
   accessTokenExpiresAt: string;
   refreshToken: string;
   refreshTokenExpiresAt: string;
-  scope: "global" | "account" | "tenant";
+  scope: SessionScope;
 }
 
 interface CookieWriter {
@@ -32,20 +66,32 @@ const baseCookieOptions = () => ({
   path: "/",
 });
 
-export function writeSessionCookies(cookies: CookieWriter, tokens: SessionTokens): void {
-  cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
+export function isInArea(pathname: string, profile: SessionProfile): boolean {
+  return pathname === profile.areaPath || pathname.startsWith(`${profile.areaPath}/`);
+}
+
+export function acceptsScope(profile: SessionProfile, scope: SessionScope): boolean {
+  return profile.acceptedScopes.includes(scope);
+}
+
+export function writeSessionCookies(
+  cookies: CookieWriter,
+  profile: SessionProfile,
+  tokens: SessionTokens,
+): void {
+  cookies.set(profile.accessCookie, tokens.accessToken, {
     ...baseCookieOptions(),
     expires: new Date(tokens.accessTokenExpiresAt),
   });
-  cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
+  cookies.set(profile.refreshCookie, tokens.refreshToken, {
     ...baseCookieOptions(),
     expires: new Date(tokens.refreshTokenExpiresAt),
   });
 }
 
-export function clearSessionCookies(cookies: CookieWriter): void {
-  cookies.delete(ACCESS_TOKEN_COOKIE);
-  cookies.delete(REFRESH_TOKEN_COOKIE);
+export function clearSessionCookies(cookies: CookieWriter, profile: SessionProfile): void {
+  cookies.delete(profile.accessCookie);
+  cookies.delete(profile.refreshCookie);
 }
 
 /** Margen para renovar antes de que el token expire en tránsito. */

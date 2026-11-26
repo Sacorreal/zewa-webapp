@@ -7,7 +7,7 @@ import { FormField, fieldA11y } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLogin } from "../hooks/use-login.hooks";
-import { type LoginInput, loginSchema } from "../validations/login.schema";
+import { type EmailLoginInput, emailLoginSchema } from "@/lib/validation/credentials";
 
 export function LoginForm() {
   const login = useLogin();
@@ -15,7 +15,7 @@ export function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+  } = useForm<EmailLoginInput>({ resolver: zodResolver(emailLoginSchema) });
 
   const pending = login.isPending || login.isSuccess;
 

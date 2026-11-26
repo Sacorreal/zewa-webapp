@@ -9,10 +9,6 @@ export const PENDING_PAGES = {
     description:
       "Muy pronto podrás agendar una demostración de ZEWA desde aquí. Estamos preparando este espacio.",
   },
-  login: {
-    title: "Iniciar sesión",
-    description: "El acceso a la plataforma estará disponible próximamente.",
-  },
   about: {
     title: "Nosotros",
     description: "Pronto compartiremos aquí quiénes somos y por qué creamos ZEWA.",

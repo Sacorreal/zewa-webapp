@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { nitError } from "@/lib/validation/nit";
+import { emailField } from "@/lib/validation/credentials";
+import { nitField } from "@/lib/validation/nit";
 import { CLIENT_SORTS, CLIENT_STATUSES } from "../types/client.types";
 
 export const CLIENT_NAME_MAX_LENGTH = 150;
@@ -13,14 +14,7 @@ const nameSchema = z
   .min(1, "El nombre del conjunto es obligatorio.")
   .max(CLIENT_NAME_MAX_LENGTH, `El nombre no puede superar ${CLIENT_NAME_MAX_LENGTH} caracteres.`);
 
-const taxIdSchema = z
-  .string()
-  .trim()
-  .min(1, "El NIT es obligatorio.")
-  .superRefine((value, context) => {
-    const error = nitError(value);
-    if (error) context.addIssue({ code: "custom", message: error });
-  });
+const taxIdSchema = nitField("El NIT es obligatorio.");
 
 /** Logo opcional: validación de cortesía; zewa-api revisa el contenido real del archivo. */
 const logoSchema = z
@@ -35,11 +29,7 @@ const logoSchema = z
 export const createClientSchema = z.object({
   name: nameSchema,
   taxId: taxIdSchema,
-  administratorEmail: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .pipe(z.email("Ingresa un correo electrónico válido.")),
+  administratorEmail: emailField,
   logo: logoSchema,
 });
 
