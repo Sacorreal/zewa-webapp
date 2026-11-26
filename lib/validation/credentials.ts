@@ -1,6 +1,5 @@
 import { z } from "zod";
-
-export const PASSWORD_MAX_LENGTH = 128;
+import { PASSWORD_MAX_LENGTH } from "./password";
 
 export const emailField = z
   .string()

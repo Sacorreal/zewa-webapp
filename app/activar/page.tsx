@@ -46,7 +46,7 @@ async function Activation({
     );
   }
 
-  const { invitation } = result;
+  const { data: invitation } = result;
   return (
     <AuthCardLayout
       eyebrow="Activación de cuenta"

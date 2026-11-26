@@ -1,3 +1,5 @@
+import type { EmailLinkValidation } from "@/lib/api/email-link-validation";
+
 export interface InvitationPreview {
   clientName: string;
   email: string;
@@ -10,6 +12,4 @@ export interface InvitationAccepted {
   email: string;
 }
 
-export type InvitationValidation =
-  | { valid: true; invitation: InvitationPreview }
-  | { valid: false; reason: string };
+export type InvitationValidation = EmailLinkValidation<InvitationPreview>;

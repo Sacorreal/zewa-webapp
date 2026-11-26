@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FormAlert } from "@/components/shared/form-alert";
 import { FormField, fieldA11y } from "@/components/shared/form-field";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAdministratorLogin } from "../hooks/use-tenant-auth.hooks";
@@ -11,7 +12,7 @@ import {
   type AdministratorLoginInput,
   administratorLoginSchema,
 } from "../validations/administrator-login.schema";
-import { PasswordInput } from "./password-input";
+import { ForgotPasswordLink } from "./forgot-password-link";
 
 const NIT_HINT = "Con o sin dígito de verificación, p. ej. 900.123.456-8.";
 
@@ -49,6 +50,8 @@ export function AdministratorLoginForm() {
           {...register("password")}
         />
       </FormField>
+
+      <ForgotPasswordLink mode="administrador" />
 
       <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Ingresando…" : "Ingresar como administrador"}

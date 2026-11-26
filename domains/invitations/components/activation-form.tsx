@@ -4,24 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { FormAlert } from "@/components/shared/form-alert";
-import { FormField, fieldA11y } from "@/components/shared/form-field";
+import { NewPasswordFields } from "@/components/shared/new-password-fields";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { formatDateTime } from "@/lib/format";
+import { type SetPasswordInput, setPasswordSchema } from "@/lib/validation/password";
 import { useAcceptInvitation } from "../hooks/use-accept-invitation.hooks";
 import type { InvitationPreview } from "../types/invitation.types";
-import {
-  PASSWORD_MIN_LENGTH,
-  type SetPasswordInput,
-  setPasswordSchema,
-} from "../validations/activation.schema";
 
 interface ActivationFormProps {
   token: string;
   invitation: InvitationPreview;
 }
-
-const PASSWORD_HINT = `Mínimo ${PASSWORD_MIN_LENGTH} caracteres. Usa una frase fácil de recordar y difícil de adivinar.`;
 
 /**
  * Acepta la invitación. Si la cuenta es nueva, define la contraseña; si el
@@ -82,22 +75,7 @@ export function ActivationForm({ token, invitation }: ActivationFormProps) {
     >
       <FormAlert message={accept.error?.message} />
       {summary}
-      <FormField id="password" label="Contraseña" error={errors.password?.message} hint={PASSWORD_HINT}>
-        <Input
-          {...fieldA11y("password", errors.password?.message, PASSWORD_HINT)}
-          type="password"
-          autoComplete="new-password"
-          {...register("password")}
-        />
-      </FormField>
-      <FormField id="confirmPassword" label="Confirmar contraseña" error={errors.confirmPassword?.message}>
-        <Input
-          {...fieldA11y("confirmPassword", errors.confirmPassword?.message)}
-          type="password"
-          autoComplete="new-password"
-          {...register("confirmPassword")}
-        />
-      </FormField>
+      <NewPasswordFields register={register} errors={errors} />
       <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Activando…" : "Activar cuenta"}
       </Button>

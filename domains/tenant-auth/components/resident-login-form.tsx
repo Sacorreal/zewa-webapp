@@ -4,11 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FormAlert } from "@/components/shared/form-alert";
 import { FormField, fieldA11y } from "@/components/shared/form-field";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { type EmailLoginInput, emailLoginSchema } from "@/lib/validation/credentials";
 import { useResidentLogin } from "../hooks/use-tenant-auth.hooks";
-import { PasswordInput } from "./password-input";
+import { ForgotPasswordLink } from "./forgot-password-link";
 
 export function ResidentLoginForm() {
   const login = useResidentLogin();
@@ -45,6 +46,8 @@ export function ResidentLoginForm() {
           {...register("password")}
         />
       </FormField>
+
+      <ForgotPasswordLink mode="residente" />
 
       <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Ingresando…" : "Ingresar"}
