@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ZewaLogo } from "@/components/brand/zewa-logo";
+import { ZewaHomeLink } from "@/components/brand/zewa-home-link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MAIN_NAV, ROUTES } from "../content/navigation";
@@ -9,9 +9,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-line/70 bg-white/90 backdrop-blur-xl">
       <div className="relative mx-auto flex h-18 w-full max-w-[1280px] items-center justify-between gap-6 px-5 lg:px-8">
-        <Link href={ROUTES.home} aria-label="ZEWA, ir al inicio" className="rounded-lg">
-          <ZewaLogo />
-        </Link>
+        <ZewaHomeLink />
 
         <nav aria-label="Navegación principal" className="hidden lg:block">
           <ul className="flex items-center gap-7">

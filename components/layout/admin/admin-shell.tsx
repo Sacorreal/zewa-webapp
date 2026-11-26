@@ -1,35 +1,54 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, Suspense, useState } from "react";
-import { ZewaLogo } from "@/components/brand/zewa-logo";
+import { ZewaHomeLink } from "@/components/brand/zewa-home-link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV_ITEMS, isNavItemActive } from "./admin-navigation";
+import { useSidebarCollapsed } from "./use-sidebar-collapsed";
 
 interface AdminShellProps {
   userMenu: ReactNode;
   children: ReactNode;
 }
 
-/** Estructura del panel global: barra lateral (cajón en móvil), encabezado y contenido. */
+/** Oculta un elemento solo en escritorio con la barra colapsada (en móvil el cajón va siempre expandido). */
+const HIDDEN_WHEN_COLLAPSED = "lg:sr-only";
+
+/**
+ * Estructura del panel global: barra lateral (cajón en móvil, colapsable a solo iconos en
+ * escritorio), encabezado y contenido.
+ */
 export function AdminShell({ userMenu, children }: AdminShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { collapsed, toggle } = useSidebarCollapsed();
   const closeMenu = () => setMenuOpen(false);
+  const ToggleIcon = collapsed ? PanelLeftOpen : PanelLeftClose;
+  const toggleLabel = collapsed ? "Expandir barra lateral" : "Colapsar barra lateral";
 
   return (
     <div className="flex min-h-svh flex-1 bg-subtle">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col gap-8 bg-sidebar px-4 py-6 text-sidebar-foreground transition-transform lg:static lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col gap-8 bg-sidebar px-4 py-6 text-sidebar-foreground transition-[translate,width] lg:sticky lg:top-0 lg:h-svh lg:translate-x-0",
           menuOpen ? "translate-x-0" : "-translate-x-full",
+          collapsed && "lg:w-18 lg:px-3",
         )}
         aria-label="Navegación del panel"
       >
-        <div className="flex items-center justify-between px-2">
-          <ZewaLogo tone="onDark" />
+        <div
+          className={cn(
+            "flex items-center justify-between px-2",
+            collapsed && "lg:justify-center lg:px-0",
+          )}
+        >
+          <ZewaHomeLink
+            tone="onDark"
+            wordmarkClassName={collapsed ? HIDDEN_WHEN_COLLAPSED : undefined}
+          />
           <Button
             variant="ghost"
             size="icon-sm"
@@ -40,10 +59,33 @@ export function AdminShell({ userMenu, children }: AdminShellProps) {
             <X />
           </Button>
         </div>
-        <Suspense fallback={<NavigationLinks pathname={null} onNavigate={closeMenu} />}>
-          <AdminNavigation onNavigate={closeMenu} />
+        <Suspense
+          fallback={
+            <NavigationLinks pathname={null} collapsed={collapsed} onNavigate={closeMenu} />
+          }
+        >
+          <AdminNavigation collapsed={collapsed} onNavigate={closeMenu} />
         </Suspense>
-        <p className="mt-auto px-2 text-xs text-mist">Administración global</p>
+        <div className="mt-auto flex flex-col gap-3">
+          <p className={cn("px-2 text-xs text-mist", collapsed && "lg:hidden")}>
+            Administración global
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "hidden justify-start gap-3 px-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-white lg:flex",
+              collapsed && "justify-center px-0",
+            )}
+            onClick={toggle}
+            aria-label={toggleLabel}
+            aria-expanded={!collapsed}
+            title={toggleLabel}
+          >
+            <ToggleIcon className="size-4" aria-hidden="true" />
+            <span className={cn(collapsed && "sr-only")}>Colapsar</span>
+          </Button>
+        </div>
       </aside>
 
       {menuOpen && (
@@ -75,15 +117,20 @@ export function AdminShell({ userMenu, children }: AdminShellProps) {
 }
 
 interface NavigationProps {
+  collapsed: boolean;
   onNavigate: () => void;
 }
 
 /** Lee la ruta actual (dato de runtime): va dentro de `<Suspense>`. */
-function AdminNavigation({ onNavigate }: NavigationProps) {
-  return <NavigationLinks pathname={usePathname()} onNavigate={onNavigate} />;
+function AdminNavigation(props: NavigationProps) {
+  return <NavigationLinks pathname={usePathname()} {...props} />;
 }
 
-function NavigationLinks({ pathname, onNavigate }: NavigationProps & { pathname: string | null }) {
+function NavigationLinks({
+  pathname,
+  collapsed,
+  onNavigate,
+}: NavigationProps & { pathname: string | null }) {
   return (
     <nav>
       <ul className="flex flex-col gap-1">
@@ -95,13 +142,15 @@ function NavigationLinks({ pathname, onNavigate }: NavigationProps & { pathname:
                 href={href}
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
+                title={collapsed ? label : undefined}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-white",
                   active && "bg-sidebar-accent text-white",
+                  collapsed && "lg:justify-center lg:px-0",
                 )}
               >
-                <Icon className="size-4" aria-hidden="true" />
-                {label}
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                <span className={cn(collapsed && HIDDEN_WHEN_COLLAPSED)}>{label}</span>
               </Link>
             </li>
           );

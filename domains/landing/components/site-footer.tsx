@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ZewaLogo } from "@/components/brand/zewa-logo";
+import { ZewaHomeLink } from "@/components/brand/zewa-home-link";
 import { FOOTER } from "../content/final-cta";
 import { FOOTER_NAV } from "../content/navigation";
 
@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto w-full max-w-[1280px] px-5 pb-8 pt-16 lg:px-8">
         <div className="grid grid-cols-1 gap-12 pb-12 lg:grid-cols-12">
           <div className="flex flex-col gap-4 lg:col-span-5">
-            <ZewaLogo tone="onDark" />
+            <ZewaHomeLink tone="onDark" />
             <p className="max-w-sm type-body text-white/70">{FOOTER.description}</p>
           </div>
 

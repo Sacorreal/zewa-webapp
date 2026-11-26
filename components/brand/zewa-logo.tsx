@@ -6,6 +6,7 @@ type LogoTone = "onLight" | "onDark";
 interface ZewaLogoProps {
   tone?: LogoTone;
   className?: string;
+  wordmarkClassName?: string;
 }
 
 const WORDMARK_COLOR: Record<LogoTone, string> = {
@@ -18,7 +19,7 @@ const SYMBOL_BACKGROUND: Record<LogoTone, string> = {
   onDark: BRAND_COLORS.translucent,
 };
 
-export function ZewaLogo({ tone = "onLight", className }: ZewaLogoProps) {
+export function ZewaLogo({ tone = "onLight", className, wordmarkClassName }: ZewaLogoProps) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <ZewaSymbol background={SYMBOL_BACKGROUND[tone]} className="size-8 shrink-0" />
@@ -26,6 +27,7 @@ export function ZewaLogo({ tone = "onLight", className }: ZewaLogoProps) {
         className={cn(
           "font-heading text-xl font-extrabold tracking-[0.12em]",
           WORDMARK_COLOR[tone],
+          wordmarkClassName,
         )}
       >
         ZEWA
