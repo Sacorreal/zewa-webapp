@@ -6,6 +6,7 @@ import { FormAlert } from "@/components/shared/form-alert";
 import { FormField, fieldA11y } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useResetOnHide } from "@/lib/hooks/use-reset-on-hide";
 import { useLogin } from "../hooks/use-login.hooks";
 import { type EmailLoginInput, emailLoginSchema } from "@/lib/validation/credentials";
 
@@ -14,8 +15,14 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<EmailLoginInput>({ resolver: zodResolver(emailLoginSchema) });
+
+  useResetOnHide(() => {
+    reset();
+    login.reset();
+  });
 
   const pending = login.isPending || login.isSuccess;
 

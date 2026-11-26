@@ -4,10 +4,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { type ComponentProps, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useResetOnHide } from "@/lib/hooks/use-reset-on-hide";
 
 /** Campo de contraseña con botón para mostrarla u ocultarla. */
 export function PasswordInput(props: Omit<ComponentProps<typeof Input>, "type">) {
   const [visible, setVisible] = useState(false);
+  useResetOnHide(() => setVisible(false));
   const Icon = visible ? EyeOff : Eye;
 
   return (

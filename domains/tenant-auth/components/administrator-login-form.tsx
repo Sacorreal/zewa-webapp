@@ -7,6 +7,7 @@ import { FormField, fieldA11y } from "@/components/shared/form-field";
 import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useResetOnHide } from "@/lib/hooks/use-reset-on-hide";
 import { useAdministratorLogin } from "../hooks/use-tenant-auth.hooks";
 import {
   type AdministratorLoginInput,
@@ -21,8 +22,14 @@ export function AdministratorLoginForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<AdministratorLoginInput>({ resolver: zodResolver(administratorLoginSchema) });
+
+  useResetOnHide(() => {
+    reset();
+    login.reset();
+  });
 
   const pending = login.isPending || login.isSuccess;
 

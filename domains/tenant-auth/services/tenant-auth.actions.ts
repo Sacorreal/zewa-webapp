@@ -7,6 +7,7 @@ import { forwardedClientHeaders } from "@/lib/api/forwarded-headers.server";
 import { zewaApi } from "@/lib/api/zewa-api.server";
 import { endSession, startSession } from "@/lib/auth/session.server";
 import {
+  APP_HOME_PATH,
   type SessionTokens,
   TENANT_SELECTION_PATH,
   TENANT_SESSION,
@@ -77,7 +78,7 @@ export async function selectTenant(tenantId: string): Promise<ActionResult<strin
 
 export async function logout(): Promise<void> {
   await endSession(TENANT_SESSION);
-  redirect(TENANT_SESSION.loginPath);
+  redirect(APP_HOME_PATH);
 }
 
 async function openSession(path: string, credentials: object): Promise<string> {

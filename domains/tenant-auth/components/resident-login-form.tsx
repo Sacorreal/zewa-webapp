@@ -7,6 +7,7 @@ import { FormField, fieldA11y } from "@/components/shared/form-field";
 import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useResetOnHide } from "@/lib/hooks/use-reset-on-hide";
 import { type EmailLoginInput, emailLoginSchema } from "@/lib/validation/credentials";
 import { useResidentLogin } from "../hooks/use-tenant-auth.hooks";
 import { ForgotPasswordLink } from "./forgot-password-link";
@@ -16,8 +17,14 @@ export function ResidentLoginForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<EmailLoginInput>({ resolver: zodResolver(emailLoginSchema) });
+
+  useResetOnHide(() => {
+    reset();
+    login.reset();
+  });
 
   const pending = login.isPending || login.isSuccess;
 
